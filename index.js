@@ -10,7 +10,19 @@ const dotenv = require("dotenv").config()
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
-app.use(cors());
+const allowedOrigins = ['http://localhost:3000']
+app.use(cors(
+    {
+        origin: function (origin, callback) {
+          if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+          } else {
+            callback(new Error('Not allowed by CORS'));
+          }
+        },
+        credentials: true
+      }
+));
 
 
 
@@ -24,6 +36,8 @@ app.use("/User",userRouter)
 app.use("/login",userRouter)
 
 app.use("/update",userRouter)
+
+app.use("/delete",userRouter)
 
 app.use((err ,req ,res ,next) => {
     const statusCode = err.statusCode || 500

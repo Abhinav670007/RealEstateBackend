@@ -3,6 +3,7 @@ const errHandler = require('./Error')
 
 
  const verifyUser = (req,res,next)=>{
+   // console.log('verifyUser middleware is being executed');
     const token = req.cookies.access_token
     console.log(token);
 

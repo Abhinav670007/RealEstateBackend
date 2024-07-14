@@ -23,22 +23,29 @@ exports.signUp = async (req,res)=>{
         res.status(200).json("Successfully Registerd")
         }
 } 
-
+      //Sign In Function
 exports.login=async(req,res,next)=>{
-   const {email,password}=req.body
-   try {
-    const validUser = await User.findOne({email})
-    if(!validUser) return next(errHandler(404,'user not found')) 
-      const validPassword = bcryptjs.compareSync(password,validUser.password) 
-    if(!validPassword) return next(errHandler(401,'Wrong credentials!'))
-        const token = jwt.sign({ id:validUser._id},process.env.JWT_SECRET,{expiresIn:'1h'})
-    res.cookie('access_token',token, {httpOnly:true,}).status(200).json(validUser)
-
-   } catch (error) {
-    next(error)
-   }
-}
-
+    const {email,password}=req.body
+    try {
+     const validUser = await User.findOne({email})
+     if(!validUser) return next(errHandler(404,'user not found')) 
+       const validPassword = bcryptjs.compareSync(password,validUser.password) 
+     if(!validPassword) return next(errHandler(401,'Wrong credentials!'))
+         const token = jwt.sign({ id:validUser._id},process.env.JWT_SECRET,{expiresIn:'1h'})
+    res.cookie('access_token', token, {
+        httpOnly: true,
+        maxAge :1024 * 60 * 60 * 24 * 3,
+        secure: true,
+        sameSite:'none'
+      });
+  
+      res.status(200).json(validUser)
+    } catch (error) {
+     next(error)
+    }
+ }
+ 
+        //Google Sign In Function
 exports.google = async(req,res,next)=>{
     try {
         const user = await User.findOne({email:req.body.email})
@@ -52,13 +59,23 @@ exports.google = async(req,res,next)=>{
             const newUser = new User({username:req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),email:req.body.email,password:hanshedPassword,avatar:req.body.photo})
             await newUser.save()
             const token = jwt.sign({ id:newUser._id},process.env.JWT_SECRET)
-            res.cookie('access_token',token, {httpOnly:true}).status(200).json(newUser)
+            // res.cookie('access_token',token, {httpOnly:true}).status(200).json(newUser)
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                maxAge :1024 * 60 * 60 * 24 * 3,
+                secure: true,
+                sameSite:'none'
+              });
+          
+              res.status(200).json(newUser)
         }
     } catch (error) {
         next(error)
         
     }
 }
+         
+            //User Update Function
 
 exports.updateUser = async(req,res,next)=>{
     if(req.user.id !== req.params.id) return next(errHandler(404,'you can only update your account'))
@@ -80,3 +97,18 @@ exports.updateUser = async(req,res,next)=>{
         next(error)
        } 
 }
+
+
+exports.deleteUser = async (req, res, next) => {
+    
+    if (req.user.id !== req.params.id) {
+        return next(errHandler(404, 'You can only delete your own account'));
+    }
+    try {
+        await User.findByIdAndDelete(req.params.id)
+        res.clearCookie('access_token')
+        res.status(200).json('User has been deleted...')
+    } catch (error) {
+        next(error);
+    }
+};

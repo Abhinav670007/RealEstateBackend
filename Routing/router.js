@@ -16,4 +16,6 @@ router.post('/google',userControllers.google)
 
 router.post('/update/:id', verifyToken, userControllers.updateUser)
 
+router.delete('/delete/:id',verifyToken, userControllers.deleteUser)
+
 module.exports = router
