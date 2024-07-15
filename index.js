@@ -1,4 +1,5 @@
 const userRouter = require("./Routing/router")
+const listingRouter = require('./Routing/listing.route')
 const cors = require('cors');
 
 const express = require('express')
@@ -38,6 +39,9 @@ app.use("/login",userRouter)
 app.use("/update",userRouter)
 
 app.use("/delete",userRouter)
+
+app.use("/listing",listingRouter)
+
 
 app.use((err ,req ,res ,next) => {
     const statusCode = err.statusCode || 500
