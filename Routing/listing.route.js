@@ -12,4 +12,5 @@ router.get('/get/:id',verifyToken, ListController.getUserListing)
 
 router.delete('/deleteList/:id',verifyToken, ListController.deleteUserList)
 
+router.post('/update/:id',verifyToken,ListController.editUserList)
 module.exports = router

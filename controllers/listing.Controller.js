@@ -43,3 +43,24 @@ exports.deleteUserList = async(req,res,next)=>{
         next(error)
     }
 }
+
+
+exports.editUserList = async (req,res,next)=>{
+    const listing = await Listing.findById(req.params.id)
+    if(!listing){
+        return next(errHandler( 404,'listing not founde'))
+    }
+    if(req.user.id !== listing.useRef){
+        return next(errHandler( 401,'you can only update your own account'))
+    }
+    try {
+      const UpdateListing =   await Listing.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new:true}  //response with updated list
+      )
+      res.status(200).json(UpdateListing)
+    } catch (error) {
+        next(error)
+    }
+}
