@@ -64,3 +64,30 @@ exports.editUserList = async (req,res,next)=>{
         next(error)
     }
 }
+
+exports.getListing =async(req,res,next)=>{
+try {
+    const listing = await Listing.findById(req.params.id)
+    if(!listing){
+        return next(errHandler(404,'listing not found'))
+    }
+    res.status(200).json(listing)
+} catch (error) {
+    next(error)
+}
+}
+
+exports.getUser =async (req,res,next)=>{
+    try {
+        const user  = await User.findById(req.params.id)
+        if(!user){
+            return next(errHandler(404,'user not found'))
+        }
+        const {password:pass, ... rest} = user._doc
+    
+        res.status(200).json(rest)
+    } catch (error) {
+        next(error)
+    }
+   
+}
