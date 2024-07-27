@@ -150,14 +150,14 @@ exports.getUser =async (req,res,next)=>{
 
 exports.getListings =async (req, res, next)=>{
     try {
-        const { searchTerm ='' , offer = 'false', furnished = 'false', parking = 'false', type = '' } = req.query;
+        const { SearchTerm  , offer = 'false', furnished = 'false', parking = 'false', type = '' } = req.query;
         const sort = req.query.sort || 'createdAt'; // Default sorting field
         const order = req.query.order === 'desc' ? -1 : 1; // Default sorting order
         const limit = parseInt(req.query.limit, 10) || 10; // Default limit
         const startIndex = parseInt(req.query.startIndex, 10) || 0; // Default start index
     
         // Log the received query parameters
-        console.log('Received query parameters:', { searchTerm, offer, furnished, parking, type, sort, order, limit, startIndex });
+        console.log('Received query parameters:', { SearchTerm, offer, furnished, parking, type, sort, order, limit, startIndex });
     
         // Convert offer, furnished, and parking to boolean
         const offerBool = offer === 'true';
@@ -166,7 +166,7 @@ exports.getListings =async (req, res, next)=>{
     
         // Construct query
         const query = {
-          name: { $regex: searchTerm, $options: 'i' },
+          name: { $regex: SearchTerm, $options: 'i' },
           offer: offerBool,
           furnished: furnishedBool,
           parking: parkingBool,
