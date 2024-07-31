@@ -18,4 +18,6 @@ router.post('/update/:id', verifyToken, userControllers.updateUser)
 
 router.delete('/delete/:id',verifyToken, userControllers.deleteUser)
 
+router.get('/signOut',userControllers.signOut)
+
 module.exports = router

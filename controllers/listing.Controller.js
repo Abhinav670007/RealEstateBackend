@@ -149,46 +149,27 @@ exports.getUser =async (req,res,next)=>{
 // }
 
 exports.getListings =async (req, res, next)=>{
-    try {
-        const { SearchTerm  , offer = 'false', furnished = 'false', parking = 'false', type = '' } = req.query;
-        const sort = req.query.sort || 'createdAt'; // Default sorting field
-        const order = req.query.order === 'desc' ? -1 : 1; // Default sorting order
-        const limit = parseInt(req.query.limit, 10) || 10; // Default limit
-        const startIndex = parseInt(req.query.startIndex, 10) || 0; // Default start index
-    
-        // Log the received query parameters
-        console.log('Received query parameters:', { SearchTerm, offer, furnished, parking, type, sort, order, limit, startIndex });
-    
-        // Convert offer, furnished, and parking to boolean
-        const offerBool = offer === 'true';
-        const furnishedBool = furnished === 'true';
-        const parkingBool = parking === 'true';
-    
-        // Construct query
-        const query = {
-          name: { $regex: SearchTerm, $options: 'i' },
-          offer: offerBool,
-          furnished: furnishedBool,
-          parking: parkingBool,
-          ...(type && type !== 'all' && { type })
-        };
-    
-        // Log the constructed query object
-        console.log('Constructed query object:', query);
-    
-        // Execute the query
-        const listings = await Listing.find(query)
-          .sort({ [sort]: order })
-          .limit(limit)
-          .skip(startIndex);
-    
-        // Log the result
-        console.log('Query result:', listings);
-    
-        // Always return a valid JSON response
-        return res.status(200).json(listings);
-      } catch (error) {
-        console.error('Error fetching listings:', error);
-        next(error);
-      }
+    const { SearchTerm, type, parking, furnished, offer, sort, order, limit, startIndex } = req.query;
+  const query = {
+    name: { '$regex': SearchTerm || '', '$options': 'i' },
+    type: type !== 'all' ? type : { '$exists': true },
+    parking: parking === 'true' ? true : { '$exists': true },
+    furnished: furnished === 'true' ? true : { '$exists': true },
+    offer: offer === 'true' ? true : { '$exists': true }
+  };
+
+//   console.log('Received query parameters:', req.query);
+//   console.log('Constructed query object:', JSON.stringify(query, null, 2));
+  try {
+
+    const listings = await Listing.find(query)
+      .sort({ [sort]: order === 'desc' ? -1 : 1 })
+      .limit(parseInt(limit))
+      .skip(parseInt(startIndex));
+    // console.log('Query result:', listings);
+    res.json(listings);
+  } catch (error) {
+    // console.error('Error fetching listings:', error);
+    res.status(500).send('Server Error');
+  }
 }

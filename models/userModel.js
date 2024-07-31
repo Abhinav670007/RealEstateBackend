@@ -22,13 +22,7 @@ const userScheme = new mongoose.Schema({
     },
 })
 
-userScheme.virtual('id').get(function() {
-    return this.id.toHexString();
-});
 
-userScheme.set('toJSON', {
-    virtuals: true,
-});
 
 const User = mongoose.model('User',userScheme)
 
