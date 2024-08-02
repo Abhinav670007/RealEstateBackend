@@ -11,6 +11,7 @@ const dotenv = require("dotenv").config()
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
+const path = require('path')
 
 
 const allowedOrigins = ['http://localhost:3000']
@@ -31,6 +32,8 @@ app.use(cors(
 
 require('./DB/connection')
 
+const __dirname = path.resolve();
+
 app.get("/", (req, res) => {
   res.send("server is running")
 })
@@ -46,6 +49,15 @@ app.use("/update",userRouter)
 app.use("/delete",userRouter)
 
 app.use("/listing",listingRouter)
+
+
+
+app.use(express.static(path.join(__dirname, '/frontend/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
+})
+
 
 app.use((err ,req ,res ,next) => {
     const statusCode = err.statusCode || 500
