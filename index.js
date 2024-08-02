@@ -40,11 +40,11 @@ app.get("/", (req, res) => {
 
 app.use("/User",userRouter)
 
-app.use("/login",userRouter)
+// app.use("/login",userRouter)
 
-app.use("/update",userRouter)
+// app.use("/update",userRouter)
 
-app.use("/delete",userRouter)
+// app.use("/delete",userRouter)
 
 app.use("/listing",listingRouter)
 
